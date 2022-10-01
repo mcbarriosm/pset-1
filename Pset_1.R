@@ -131,5 +131,71 @@ summarise(promedio_inglabo = mean(INGLABO, na.rm = T),
 
 # Graficas:
 
+# `ggplot()`
+
+# **"mapping" y "aes"** se usan para indicar las cordenadas de los datos.
+ggplot(data = base_datos_lj , mapping = aes(x = P6040 , y = INGLABO))
+
+# + geometry
+ggplot(data = base_datos_lj , mapping = aes(x = P6040 , y = INGLABO)) +
+  geom_point(col = "red" , size = 0.5)
+
+# Guardar la grafica dentro de un objeto: 
+graph_1 <- ggplot(data = base_datos_lj, 
+                  mapping = aes( x = P6040 , y = INGLABO, group= as.character(P6020), color = as.factor(P6020))) +
+            geom_point(size = 0.5)
+graph_1
+
+# Añadir atributos a este objeto
+graph_1 + scale_color_manual(values = c("2"="red" , "1"="blue") , label = c("1"="Hombre" , "2"="Mujer") , name = "Sexo") +
+          labs(x = "Edad", y = "Ingresos Laborales", title = "Edad VS Ingresos Laborales", subtitle = "Desagregados por sexo")
+
+
+## **density chart:**
+graph_2 <- filter(base_datos_lj, !is.na(P6450) & INGLABO < 1e+07 ) %>% 
+            ggplot(data=. , mapping = aes(x = INGLABO, group = as.factor(P6450), fill = as.factor(P6450))) + 
+            geom_density() 
+graph_2
+
+## se cambian los ejes
+graph_2 <- graph_2  + 
+            scale_fill_discrete(label = c("1"="Verbal" , "2"="Escrito", "9"="No informa/Conoce") , name = "Contrato") + 
+            labs(x = "Ingresos" , y = "",
+                title = "Ingresos menores a 10 SLMV",
+                subtitle = "Desagregados por tipo de contrato")
+graph_2
+
+# `group_by()` `+` `ggplot()`** 
+
+## summarize data
+base_datos_lj %>% 
+  group_by(P6020) %>% 
+  summarise(Ingresos = mean(INGLABO, na.rm = T)) 
+
+## plot
+graph_3 <- base_datos_lj %>% 
+  group_by(P6020) %>% 
+  summarise(Ingresos = mean(INGLABO, na.rm = T)) %>% 
+  ggplot(data=. , mapping = aes(x = as.factor(P6020) , y = Ingresos, fill = as.factor(P6020))) + 
+  geom_bar(stat = "identity") 
+graph_3
+
+##se cambian los ejes y el theme:
+graph_3 +
+  scale_fill_manual(values = c("2"="red" , "1"="blue") , label = c("1"="Hombre" , "2"="Mujer") , name = "Sexo") +
+  labs(x = "sexo", y = "ingresos", title = "Ingresos laborales por sexo") + 
+  theme_classic()
+
+# Grafico de ingresos laborales por departamento:
+graph_4 <- ggplot(data = base_datos_lj , mapping = aes(x = DPTO , y = INGLABO, group= as.character(P6020), color = as.factor(P6020))) +
+          geom_point(size = 0.5)
+
+graph_4
+
+# Añadir atributos a este objeto
+graph_4 + scale_color_manual(values = c("2"="red" , "1"="blue") , label = c("1"="Hombre" , "2"="Mujer") , name = "Sexo") +
+  labs(x = "Departamento", y = "Ingresos Laborales", title = "Ingresos Laborales por Departamento", 
+       subtitle = "Desagregados por sexo")
+
 
 
