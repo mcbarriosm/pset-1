@@ -199,3 +199,4 @@ graph_4 + scale_color_manual(values = c("2"="red" , "1"="blue") , label = c("1"=
 
 
 
+
